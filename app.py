@@ -5,6 +5,9 @@ from flask_cors import CORS
 
 from models import setup_db, Movie, Actor, db
 
+from auth import AuthError, requires_auth
+
+
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__)
@@ -23,38 +26,40 @@ def create_app(test_config=None):
     # GET /actors
 
     @app.route('/actors', methods=['GET'])
-    def get_actors():
-      try:
-        actors = Actor.query.all()
-        formatted_actors = [actor.format() for actor in actors]
+    @requires_auth('get:actors')
+    def get_actors(payload):
+        try:
+            actors = Actor.query.all()
+            formatted_actors = [actor.format() for actor in actors]
 
-        return jsonify({
-            'success': True,
-            'actors': formatted_actors
-        })
-      except:
-        abort(400)
+            return jsonify({
+                'success': True,
+                'actors': formatted_actors
+            })
+        except:
+            abort(400)
 
     # GET /movies
 
     @app.route('/movies', methods=['GET'])
-    def get_movies():
-      try:
-        movies = Movie.query.all()
-        formatted_movies = [movie.format() for movie in movies]
+    @requires_auth('get:movies')
+    def get_movies(payload):
+        try:
+            movies = Movie.query.all()
+            formatted_movies = [movie.format() for movie in movies]
 
-        return jsonify({
-            'success': True,
-            'movies': formatted_movies
-        })
-      except:
-        abort(400)
+            return jsonify({
+                'success': True,
+                'movies': formatted_movies
+            })
+        except:
+            abort(400)
 
     # DELETE /actors
 
     @app.route('/actors/<id>', methods=['DELETE'])
-    #@requires_auth('delete:actors')
-    def delete_actor(id):
+    @requires_auth('delete:actors')
+    def delete_actor(payload,id):
         try:
             actor = Actor.query.filter(Actor.id == id).one_or_none()
 
@@ -74,8 +79,8 @@ def create_app(test_config=None):
     # DELETE /movies
 
     @app.route('/movies/<id>', methods=['DELETE'])
-    #@requires_auth('delete:movies')
-    def delete_movie(id):
+    @requires_auth('delete:movies')
+    def delete_movie(payload,id):
         try:
             movie = Movie.query.filter(Movie.id == id).one_or_none()
 
@@ -95,16 +100,16 @@ def create_app(test_config=None):
     # POST /actors
 
     @app.route('/actors', methods=['POST'])
-    #@requires_auth('post:actors')
-    def post_actor():
+    @requires_auth('post:actors')
+    def post_actor(payload):
         try:
             age = request.get_json()['age']
             gender = request.get_json()['gender']
             name = request.get_json()['name']
 
-            newactor = Actor(age = age,
-                             gender = gender,
-                             name = name)
+            newactor = Actor(age=age,
+                             gender=gender,
+                             name=name)
             newactor.insert()
             return jsonify({
                 'success': True,
@@ -115,27 +120,27 @@ def create_app(test_config=None):
 
     # POST /movies
     @app.route('/movies', methods=['POST'])
-    #@requires_auth('post:movies')
-    def post_movie():
+    @requires_auth('post:movies')
+    def post_movie(payload):
         try:
             title = request.get_json()['title']
             releasedate = request.get_json()['releasedate']
 
-            newmovie = Movie(title = title,
-                            releasedate = releasedate)
+            newmovie = Movie(title=title,
+                             releasedate=releasedate)
             newmovie.insert()
             return jsonify({
                 'success': True,
                 'movie': newmovie.format()
             })
         except Exception:
-            abort(400)    
+            abort(400)
 
     # PATCH /actors
 
     @app.route('/actors/<id>', methods=['PATCH'])
-    #@requires_auth('patch:actors')
-    def patch_actor(id):
+    @requires_auth('patch:actors')
+    def patch_actor(payload,id):
         try:
             actor = Actor.query.filter(Actor.id == id).one_or_none()
 
@@ -165,8 +170,8 @@ def create_app(test_config=None):
     # PATCH /movies
 
     @app.route('/movies/<id>', methods=['PATCH'])
-    #@requires_auth('patch:movies')
-    def patch_movie(id):
+    @requires_auth('patch:movies')
+    def patch_movie(payload,id):
         try:
             movie = Movie.query.filter(Movie.id == id).one_or_none()
 
@@ -190,8 +195,14 @@ def create_app(test_config=None):
         except Exception:
             abort(400)
 
-
     # Errorhandlers
+
+    @app.errorhandler(AuthError)
+    def handle_auth_error(ex):
+        response = jsonify(ex.error)
+        response.status_code = ex.status_code
+        return response
+
     @app.errorhandler(400)
     def not_found(error):
         return jsonify({
@@ -234,6 +245,7 @@ def create_app(test_config=None):
         }), 500
 
     return app
+
 
 app = create_app()
 if __name__ == '__main__':
