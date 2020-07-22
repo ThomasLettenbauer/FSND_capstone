@@ -59,7 +59,7 @@ def create_app(test_config=None):
 
     @app.route('/actors/<id>', methods=['DELETE'])
     @requires_auth('delete:actors')
-    def delete_actor(payload,id):
+    def delete_actor(payload, id):
         try:
             actor = Actor.query.filter(Actor.id == id).one_or_none()
 
@@ -80,7 +80,7 @@ def create_app(test_config=None):
 
     @app.route('/movies/<id>', methods=['DELETE'])
     @requires_auth('delete:movies')
-    def delete_movie(payload,id):
+    def delete_movie(payload, id):
         try:
             movie = Movie.query.filter(Movie.id == id).one_or_none()
 
@@ -140,7 +140,7 @@ def create_app(test_config=None):
 
     @app.route('/actors/<id>', methods=['PATCH'])
     @requires_auth('patch:actors')
-    def patch_actor(payload,id):
+    def patch_actor(payload, id):
         try:
             actor = Actor.query.filter(Actor.id == id).one_or_none()
 
@@ -171,7 +171,7 @@ def create_app(test_config=None):
 
     @app.route('/movies/<id>', methods=['PATCH'])
     @requires_auth('patch:movies')
-    def patch_movie(payload,id):
+    def patch_movie(payload, id):
         try:
             movie = Movie.query.filter(Movie.id == id).one_or_none()
 

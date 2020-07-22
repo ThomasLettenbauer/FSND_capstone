@@ -7,7 +7,7 @@ from sqlalchemy.orm import relationship
 import json
 
 database_name = "agency"
-database_path = "postgres:///{}".format(database_name)
+database_path = "postgresql:///{}".format(database_name)
 
 db = SQLAlchemy()
 
@@ -22,7 +22,10 @@ def setup_db(app, database_path=database_path):
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     db.app = app
     db.init_app(app)
-    # db.create_all() # not necessary - we use migrations
+    if app.config['TESTING']:
+        db.session.commit()
+        db.drop_all()
+        db.create_all() # not necessary in production - we use migrations
 
 
 '''
