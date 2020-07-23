@@ -102,7 +102,7 @@ def create_app(test_config=None):
     @app.route('/actors', methods=['POST'])
     @requires_auth('post:actors')
     def post_actor(payload):
-        try:
+    #    try:
             age = request.get_json()['age']
             gender = request.get_json()['gender']
             name = request.get_json()['name']
@@ -115,8 +115,8 @@ def create_app(test_config=None):
                 'success': True,
                 'actor': newactor.format()
             })
-        except Exception:
-            abort(400)
+    #    except Exception:
+     #       abort(400)
 
     # POST /movies
     @app.route('/movies', methods=['POST'])
