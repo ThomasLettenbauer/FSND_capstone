@@ -6,8 +6,12 @@ from sqlalchemy.orm import relationship
 
 import json
 
-database_name = "agency"
-database_path = "postgresql:///{}".format(database_name)
+# set database path from environment, else set default
+try:
+    database_path = os.environ.get('DATABASE_URL') 
+except:
+    database_name = "agency"
+    database_path = "postgresql:///{}".format(database_name)
 
 db = SQLAlchemy()
 
