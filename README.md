@@ -1,10 +1,21 @@
-# Coffee Shop Full Stack
+# Full Stack Capstone Project Casting Agency
+
+## Heroku Deployment
+
+App can be found at https://fsndcapstoneapp.herokuapp.com
+
+The Endpoints can be tested in Postman with the supplied Collection    
+
+    **udacity-fsnd-capstone.postman_collection.json**
+
+This Collection includes valid Tokens for the different roles
+    
 
 ## Backend Installation and Startup
 
 #### PIP Dependencies
 
-Once you have your virtual environment setup and running, install dependencies by naviging to the `/backend` directory and running:
+Once you have your virtual environment setup and running, install dependencies with 
 
 ```bash
 pip install -r requirements.txt
@@ -12,14 +23,14 @@ pip install -r requirements.txt
 
 This will install all of the required packages we selected within the `requirements.txt` file.
 
-## Running the server
+## Running the server locally
 
-From within the `./src` directory first ensure you are working using your created virtual environment.
+From within the directory first ensure you are working using your created virtual environment.
 
 Each time you open a new terminal session, run:
 
 ```bash
-export FLASK_APP=api.py;
+export FLASK_APP=app.py;
 ```
 
 To run the server, execute:
@@ -30,36 +41,177 @@ flask run --reload
 
 The `--reload` flag will detect file changes and restart the server automatically.
 
-## Frontend Installation and Startup
+## API Endpoints
 
-### Installing Dependencies
+### GET /movies
+* General:
+	* Returns a list of movies and success value
+* Sample: 
 
-#### Installing Node and NPM
+	    curl https://fsndcapstoneapp.herokuapp.com/movies
 
-This project depends on Nodejs and Node Package Manager (NPM). Before continuing, you must download and install Node (the download includes NPM) from [https://nodejs.com/en/download](https://nodejs.org/en/download/).
+* Response:
 
-#### Installing Ionic Cli
+        {
+            "movies": [
+                {
+                    "id": 1,
+                    "releasedate": "Wed, 09 Sep 2020 00:00:00 GMT",
+                    "title": "The Green Screen"
+                },
+                {
+                    "id": 2,
+                    "releasedate": "Wed, 11 Nov 2020 00:00:00 GMT",
+                    "title": "The Blue Lagoon"
+                }
+            ],
+            "success": true
+        }
 
-The Ionic Command Line Interface is required to serve and build the frontend. Instructions for installing the CLI  is in the [Ionic Framework Docs](https://ionicframework.com/docs/installation/cli).
+### GET /actors
+* General:
+	* Returns a list of actors and success value
+* Sample: 
+	
+	    curl https://fsndcapstoneapp.herokuapp.com/actors
 
-#### Installing project dependencies
+* Response:
 
-This project uses NPM to manage software dependencies. NPM Relies on the package.json file located in the `frontend` directory of this repository. After cloning, open your terminal and run:
+        {
+            "actors": [
+                {
+                    "age": 55,
+                    "gender": "male",
+                    "id": 1,
+                    "name": "Sean Canary"
+                }
+            ],
+            "success": true
+        }
+  
+### DELETE /movies/\<id\>
+* General:
+	*  Deletes the movie with id *id*
 
-```bash
-npm install
-```
+* Sample: 
+	
 
->_tip_: **npm i** is shorthand for **npm install**
+	    curl -X DELETE curl https://fsndcapstoneapp.herokuapp.com/movies/1
+* Response:
 
-## Running Your Frontend in Dev Mode
+	    {
+	      "deleted": 1, 
+	      "success": true
+	    }
+	      
+### DELETE /actors/\<id\>
+* General:
+	*  Deletes the actor with id *id*
 
-Ionic ships with a useful development server which detects changes and transpiles as you work. The application is then accessible through the browser on a localhost port. To run the development server, cd into the `frontend` directory and run:
+* Sample: 
+	
 
-```bash
-ionic serve
-```
+	    curl -X DELETE curl https://fsndcapstoneapp.herokuapp.com/actors/1
+* Response:
 
->_tip_: Do not use **ionic serve**  in production. Instead, build Ionic into a build artifact for your desired platforms.
-[Checkout the Ionic docs to learn more](https://ionicframework.com/docs/cli/commands/build)
+	    {
+	      "deleted": 1, 
+	      "success": true
+	    }
 
+### POST /movies
+* General:
+	* Inserts a new movie with values for title and releasedate in the body
+	* Returns a success value and movie data
+
+* Sample: 
+
+	    curl 	--header "Content-Type: application/json" --request POST \
+				--data '{"title":"The Blue Lagoon","releasedate":"11/11/2020"}' \
+				https://fsndcapstoneapp.herokuapp.com/movies
+* Response:
+
+        {
+            "movie": {
+                "id": 3,
+                "releasedate": "Wed, 11 Nov 2020 00:00:00 GMT",
+                "title": "The Blue Lagoon"
+            },
+            "success": true
+        }
+
+### POST /actors
+* General:
+	* Inserts a new actor with values for name, age and gender in the body
+	* Returns a success value and actor data
+
+* Sample: 
+
+	    curl 	--header "Content-Type: application/json" --request POST \
+				--data '{"name":"Babsi Streusand","age":40,"gender":"female"}' \
+				https://fsndcapstoneapp.herokuapp.com/actors
+* Response:
+
+        {
+            "actor": {
+                "id": 3,
+                "name": "Babsi Streusand",
+                "age": 40,
+                "gender": "female"
+            },
+            "success": true
+        }
+
+### PATCH /movies\<id\>
+* General:
+	* Update the movie with id *id* with values for title or releasedate in the body
+	* Returns a success value and movie data
+
+* Sample: 
+
+	    curl 	--header "Content-Type: application/json" --request PATCH \
+				--data '{"title":"The Green Lagoon","releasedate":"11/11/2020"}' \
+				https://fsndcapstoneapp.herokuapp.com/movies/3
+* Response:
+
+        {
+            "movie": {
+                "id": 3,
+                "releasedate": "Wed, 11 Nov 2020 00:00:00 GMT",
+                "title": "The Green Lagoon"
+            },
+            "success": true
+        }
+
+### PATCH /actors\<id\>
+* General:
+	* Updates the actor with id *id* with values for name, age or gender in the body
+	* Returns a success value and actor data
+
+* Sample: 
+
+	    curl 	--header "Content-Type: application/json" --request PATCH \
+				--data '{"name":"Babsi Streusel","age":40,"gender":"female"}' \
+				https://fsndcapstoneapp.herokuapp.com/actors/3
+* Response:
+
+        {
+            "actor": {
+                "id": 3,
+                "name": "Babsi Streusel",
+                "age": 40,
+                "gender": "female"
+            },
+            "success": true
+        }
+
+## Roles
+### Casting Assistant
+    Can view actors and movies (get:actors, get:movies)
+### Casting Director
+    All permissions a Casting Assistant has and…
+	Add or delete an actor from the database (post:actors, delete:actors)
+	Modify actors or movies (patch:actors, patch:movies)
+### Executive Producer
+	All permissions a Casting Director has and…
+    Add or delete a movie from the database (post:movies, delete:movies) 
